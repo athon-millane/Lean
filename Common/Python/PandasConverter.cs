@@ -143,7 +143,8 @@ namespace QuantConnect.Python
                         index.Add(item.EndTime);
                         values.Add((double)item.Value);
                     }
-                    pyDict.SetItem(kvp.Key.ToLowerInvariant(), _pandas.Series(values, index));
+
+                    pyDict.SetItem(kvp.Key.ToLowerInvariant(), _pandas.Series(data: values, index: index));
                 }
 
                 return _pandas.DataFrame(pyDict, columns: data.Keys.Select(x => x.ToLowerInvariant()).OrderBy(x => x));
