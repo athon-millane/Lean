@@ -15,7 +15,8 @@
 # allow script to be called from anywhere
 cd "$(dirname "$0")/" || exit
 
-DEFAULT_IMAGE=quantconnect/research:latest
+# DEFAULT_IMAGE=quantconnect/research:latest
+DEFAULT_IMAGE=leanlocaljupyter:0.1
 DEFAULT_DATA_DIR=../Data
 DEFAULT_NOTEBOOK_DIR=./Notebooks/
 CONTAINER_NAME=LeanResearch
