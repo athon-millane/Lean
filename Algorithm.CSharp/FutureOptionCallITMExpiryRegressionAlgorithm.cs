@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using QuantConnect.Data;
 using QuantConnect.Interfaces;
 using QuantConnect.Orders;
@@ -45,11 +44,6 @@ namespace QuantConnect.Algorithm.CSharp
         {
             SetStartDate(2020, 1, 5);
             SetEndDate(2020, 6, 30);
-
-            // We add AAPL as a temporary workaround for https://github.com/QuantConnect/Lean/issues/4872
-            // which causes delisting events to never be processed, thus leading to options that might never
-            // be exercised until the next data point arrives.
-            AddEquity("AAPL", Resolution.Daily);
 
             _es19m20 = AddFutureContract(
                 QuantConnect.Symbol.CreateFuture(
@@ -132,12 +126,7 @@ namespace QuantConnect.Algorithm.CSharp
 
         private void AssertFutureOptionOrderExercise(OrderEvent orderEvent, Security future, Security optionContract)
         {
-            // We expect the liquidation to occur on the day of the delisting (while the market is open),
-            // but currently we liquidate at the next market open (AAPL open) which happens to be
-            // at 9:30:00 Eastern Time. For unknown reasons, the delisting happens two minutes after the
-            // market open.
-            // Read more about the issue affecting this test here: https://github.com/QuantConnect/Lean/issues/4980
-            var expectedLiquidationTimeUtc = new DateTime(2020, 6, 22, 13, 32, 0);
+            var expectedLiquidationTimeUtc = new DateTime(2020, 6, 19, 20, 0, 0);
 
             if (orderEvent.Direction == OrderDirection.Sell && future.Holdings.Quantity != 0)
             {
@@ -214,31 +203,31 @@ namespace QuantConnect.Algorithm.CSharp
         public Dictionary<string, string> ExpectedStatistics => new Dictionary<string, string>
         {
             {"Total Trades", "3"},
-            {"Average Win", "1.25%"},
+            {"Average Win", "1.22%"},
             {"Average Loss", "-7.42%"},
-            {"Compounding Annual Return", "-12.413%"},
+            {"Compounding Annual Return", "-13.222%"},
             {"Drawdown", "6.300%"},
-            {"Expectancy", "-0.416"},
-            {"Net Profit", "-6.257%"},
-            {"Sharpe Ratio", "-1.325"},
-            {"Probabilistic Sharpe Ratio", "0.004%"},
+            {"Expectancy", "-0.417"},
+            {"Net Profit", "-6.282%"},
+            {"Sharpe Ratio", "-1.345"},
+            {"Probabilistic Sharpe Ratio", "0.005%"},
             {"Loss Rate", "50%"},
             {"Win Rate", "50%"},
             {"Profit-Loss Ratio", "0.17"},
-            {"Alpha", "-0.102"},
+            {"Alpha", "-0.105"},
             {"Beta", "-0.003"},
-            {"Annual Standard Deviation", "0.076"},
+            {"Annual Standard Deviation", "0.078"},
             {"Annual Variance", "0.006"},
-            {"Information Ratio", "0.673"},
-            {"Tracking Error", "0.188"},
-            {"Treynor Ratio", "33.559"},
+            {"Information Ratio", "0.678"},
+            {"Tracking Error", "0.191"},
+            {"Treynor Ratio", "33.18"},
             {"Total Fees", "$7.40"},
             {"Fitness Score", "0.008"},
             {"Kelly Criterion Estimate", "0"},
             {"Kelly Criterion Probability Value", "0"},
-            {"Sortino Ratio", "-0.205"},
-            {"Return Over Maximum Drawdown", "-1.983"},
-            {"Portfolio Turnover", "0.023"},
+            {"Sortino Ratio", "-0.217"},
+            {"Return Over Maximum Drawdown", "-2.105"},
+            {"Portfolio Turnover", "0.024"},
             {"Total Insights Generated", "0"},
             {"Total Insights Closed", "0"},
             {"Total Insights Analysis Completed", "0"},
@@ -252,7 +241,7 @@ namespace QuantConnect.Algorithm.CSharp
             {"Mean Population Magnitude", "0%"},
             {"Rolling Averaged Population Direction", "0%"},
             {"Rolling Averaged Population Magnitude", "0%"},
-            {"OrderListHash", "23301049"}
+            {"OrderListHash", "-1947859887"}
         };
     }
 }

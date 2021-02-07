@@ -76,7 +76,7 @@ namespace QuantConnect.Lean.Launcher
             Log.Trace("Engine.Main(): Started " + DateTime.Now.ToShortTimeString());
 
             //Import external libraries specific to physical server location (cloud/local)
-            
+
             try
             {
                 leanEngineSystemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
@@ -122,7 +122,7 @@ namespace QuantConnect.Lean.Launcher
                 leanEngineSystemHandlers.Notify.SetAuthentication(job);
                 leanEngineSystemHandlers.Notify.Send(new RuntimeErrorPacket(job.UserId, job.AlgorithmId, _collapseMessage));
                 leanEngineSystemHandlers.JobQueue.AcknowledgeJob(job);
-                Exit();
+                Exit(1);
             }
 
             try
@@ -140,7 +140,9 @@ namespace QuantConnect.Lean.Launcher
             }
             finally
             {
-                Exit();
+                var algorithmStatus = algorithmManager?.State ?? AlgorithmStatus.DeployError;
+
+                Exit(algorithmStatus != AlgorithmStatus.Completed ? 1 : 0);
             }
         }
 
@@ -154,7 +156,7 @@ namespace QuantConnect.Lean.Launcher
             Log.Trace("Program.ExitKeyPress(): Lean instance has been cancelled, shutting down safely now");
         }
 
-        public static void Exit()
+        public static void Exit(int exitCode)
         {
             //Delete the message from the job queue:
             leanEngineSystemHandlers.JobQueue.AcknowledgeJob(job);
@@ -164,9 +166,10 @@ namespace QuantConnect.Lean.Launcher
             leanEngineSystemHandlers.DisposeSafely();
             leanEngineAlgorithmHandlers.DisposeSafely();
             Log.LogHandler.DisposeSafely();
+            OS.CpuPerformanceCounter.DisposeSafely();
 
             Log.Trace("Program.Main(): Exiting Lean...");
-            Environment.Exit(0);
+            Environment.Exit(exitCode);
         }
     }
 }

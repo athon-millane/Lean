@@ -132,10 +132,16 @@ namespace QuantConnect.Packets
         public int PersistenceIntervalSeconds;
 
         /// <summary>
-        /// Gets list of streaming data permissions
+        /// Gets list of streaming data types permissions
         /// </summary>
         [JsonProperty(PropertyName = "streamingDataPermissions")]
         public HashSet<string> StreamingDataPermissions;
+
+        /// <summary>
+        /// Gets list of streaming security types permissions
+        /// </summary>
+        [JsonProperty(PropertyName = "streamingSecurityTypePermissions")]
+        public HashSet<SecurityType> StreamingSecurityTypePermissions;
 
         /// <summary>
         /// Gets list of allowed data resolutions
@@ -146,8 +152,8 @@ namespace QuantConnect.Packets
         /// <summary>
         /// The cost associated with running this job
         /// </summary>
-        [JsonProperty(PropertyName = "iCreditCost")]
-        public uint CreditCost;
+        [JsonProperty(PropertyName = "dCreditCost")]
+        public decimal CreditCost;
 
         /// <summary>
         /// Initializes a new default instance of the <see cref="Controls"/> class

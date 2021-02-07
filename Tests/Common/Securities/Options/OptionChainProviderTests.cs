@@ -21,6 +21,8 @@ using System.Threading;
 using NUnit.Framework;
 using QuantConnect.Interfaces;
 using QuantConnect.Lean.Engine.DataFeeds;
+using QuantConnect.Securities.Future;
+using QuantConnect.Util;
 
 namespace QuantConnect.Tests.Common.Securities.Options
 {
@@ -111,13 +113,24 @@ namespace QuantConnect.Tests.Common.Securities.Options
         public void LiveOptionChainProviderReturnsFutureOptionData()
         {
             var now = DateTime.Now;
-            var december = now.AddMonths(-now.Month).AddMonths(12);
-            var underlyingFuture = Symbol.CreateFuture("ES", Market.CME, december);
+            var december = new DateTime(now.Year, 12, 1);
+            var canonicalFuture = Symbol.Create("ES", SecurityType.Future, Market.CME);
+            var expiry = FuturesExpiryFunctions.FuturesExpiryFunction(canonicalFuture)(december);
 
+            // When the current year's december contract expires, the test starts failing.
+            // This will happen around the last 10 days of December, but will start working
+            // once we've crossed into the new year.
+            // Let's try the next listed contract, which is in March of the next year if this is the case.
+            if (now >= expiry)
+            {
+                expiry = now.AddMonths(-now.Month).AddYears(1).AddMonths(3);
+            }
+
+            var underlyingFuture = Symbol.CreateFuture("ES", Market.CME, expiry);
             var provider = new LiveOptionChainProvider();
-            var result = provider.GetOptionContractList(underlyingFuture, december);
+            var result = provider.GetOptionContractList(underlyingFuture, now).ToList();
 
-            Assert.AreNotEqual(0, result.Count());
+            Assert.AreNotEqual(0, result.Count);
 
             foreach (var symbol in result)
             {
@@ -140,6 +153,36 @@ namespace QuantConnect.Tests.Common.Securities.Options
             var result = provider.GetOptionContractList(underlyingFuture, december);
 
             Assert.AreEqual(0, result.Count());
+        }
+
+        [TestCase(OptionRight.Call, 1650, 2020, 3, 26)]
+        [TestCase(OptionRight.Put, 1540, 2020, 3, 26)]
+        [TestCase(OptionRight.Call, 1600, 2020, 2, 25)]
+        [TestCase(OptionRight.Put, 1545, 2020, 2, 25)]
+        public void BacktestingOptionChainProviderReturnsMultipleContractsForZipFileContainingMultipleContracts(
+            OptionRight right,
+            int strike,
+            int year,
+            int month,
+            int day)
+        {
+            var underlying = Symbol.CreateFuture("GC", Market.COMEX, new DateTime(2020, 4, 28));
+            var expiry = new DateTime(year, month, day);
+            var expectedOption = Symbol.CreateOption(
+                underlying,
+                Market.COMEX,
+                OptionStyle.American,
+                right,
+                strike,
+                expiry);
+
+            var provider = new BacktestingOptionChainProvider();
+            var contracts = provider.GetOptionContractList(underlying, new DateTime(2020, 1, 5))
+                .ToHashSet();
+
+            Assert.IsTrue(
+                contracts.Contains(expectedOption),
+                $"Failed to find contract {expectedOption} in: [{string.Join(", ", contracts.Select(s => s.ToString()))}");
         }
     }
 

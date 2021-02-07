@@ -26,10 +26,12 @@ namespace QuantConnect.Algorithm.CSharp
 {
     /// <summary>
     /// This regression algorithm tests Out of The Money (OTM) future option expiry for puts.
-    /// We expect 1 order from the algorithm, which are:
+    /// We expect 2 orders from the algorithm, which are:
     ///
     ///   * Initial entry, buy ES Put Option (expiring OTM)
     ///     - contract expires worthless, not exercised, so never opened a position in the underlying
+    ///
+    ///   * Liquidation of worthless ES Put OTM contract
     ///
     /// Additionally, we test delistings for future options and assert that our
     /// portfolio holdings reflect the orders the algorithm has submitted.
@@ -47,11 +49,6 @@ namespace QuantConnect.Algorithm.CSharp
         {
             SetStartDate(2020, 1, 5);
             SetEndDate(2020, 6, 30);
-
-            // We add AAPL as a temporary workaround for https://github.com/QuantConnect/Lean/issues/4872
-            // which causes delisting events to never be processed, thus leading to options that might never
-            // be exercised until the next data point arrives.
-            AddEquity("AAPL", Resolution.Daily);
 
             _es19m20 = AddFutureContract(
                 QuantConnect.Symbol.CreateFuture(
@@ -182,28 +179,28 @@ namespace QuantConnect.Algorithm.CSharp
             {"Total Trades", "2"},
             {"Average Win", "0%"},
             {"Average Loss", "-5.12%"},
-            {"Compounding Annual Return", "-10.212%"},
+            {"Compounding Annual Return", "-10.844%"},
             {"Drawdown", "5.100%"},
             {"Expectancy", "-1"},
             {"Net Profit", "-5.116%"},
-            {"Sharpe Ratio", "-1.26"},
-            {"Probabilistic Sharpe Ratio", "0.016%"},
+            {"Sharpe Ratio", "-1.28"},
+            {"Probabilistic Sharpe Ratio", "0.017%"},
             {"Loss Rate", "100%"},
             {"Win Rate", "0%"},
             {"Profit-Loss Ratio", "0"},
-            {"Alpha", "-0.084"},
+            {"Alpha", "-0.086"},
             {"Beta", "-0.003"},
-            {"Annual Standard Deviation", "0.066"},
+            {"Annual Standard Deviation", "0.067"},
             {"Annual Variance", "0.004"},
-            {"Information Ratio", "0.785"},
-            {"Tracking Error", "0.184"},
-            {"Treynor Ratio", "28.158"},
+            {"Information Ratio", "0.794"},
+            {"Tracking Error", "0.187"},
+            {"Treynor Ratio", "28.078"},
             {"Total Fees", "$3.70"},
             {"Fitness Score", "0"},
             {"Kelly Criterion Estimate", "0"},
             {"Kelly Criterion Probability Value", "0"},
-            {"Sortino Ratio", "-0.181"},
-            {"Return Over Maximum Drawdown", "-1.995"},
+            {"Sortino Ratio", "-0.193"},
+            {"Return Over Maximum Drawdown", "-2.12"},
             {"Portfolio Turnover", "0"},
             {"Total Insights Generated", "0"},
             {"Total Insights Closed", "0"},
@@ -218,7 +215,7 @@ namespace QuantConnect.Algorithm.CSharp
             {"Mean Population Magnitude", "0%"},
             {"Rolling Averaged Population Direction", "0%"},
             {"Rolling Averaged Population Magnitude", "0%"},
-            {"OrderListHash", "515984318"}
+            {"OrderListHash", "-49211561"}
         };
     }
 }

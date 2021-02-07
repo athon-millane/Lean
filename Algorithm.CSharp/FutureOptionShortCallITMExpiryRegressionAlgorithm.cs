@@ -46,11 +46,6 @@ namespace QuantConnect.Algorithm.CSharp
             SetStartDate(2020, 1, 5);
             SetEndDate(2020, 6, 30);
 
-            // We add AAPL as a temporary workaround for https://github.com/QuantConnect/Lean/issues/4872
-            // which causes delisting events to never be processed, thus leading to options that might never
-            // be exercised until the next data point arrives.
-            AddEquity("AAPL", Resolution.Daily);
-
             _es19m20 = AddFutureContract(
                 QuantConnect.Symbol.CreateFuture(
                     Futures.Indices.SP500EMini,
@@ -194,29 +189,29 @@ namespace QuantConnect.Algorithm.CSharp
         {
             {"Total Trades", "3"},
             {"Average Win", "10.05%"},
-            {"Average Loss", "-5.60%"},
-            {"Compounding Annual Return", "8.121%"},
+            {"Average Loss", "-5.63%"},
+            {"Compounding Annual Return", "8.619%"},
             {"Drawdown", "0.500%"},
-            {"Expectancy", "0.396"},
-            {"Net Profit", "3.880%"},
-            {"Sharpe Ratio", "1.192"},
-            {"Probabilistic Sharpe Ratio", "58.203%"},
+            {"Expectancy", "0.393"},
+            {"Net Profit", "3.855%"},
+            {"Sharpe Ratio", "1.212"},
+            {"Probabilistic Sharpe Ratio", "59.039%"},
             {"Loss Rate", "50%"},
             {"Win Rate", "50%"},
             {"Profit-Loss Ratio", "1.79"},
-            {"Alpha", "0.069"},
+            {"Alpha", "0.071"},
             {"Beta", "0.003"},
-            {"Annual Standard Deviation", "0.057"},
+            {"Annual Standard Deviation", "0.058"},
             {"Annual Variance", "0.003"},
-            {"Information Ratio", "1.641"},
-            {"Tracking Error", "0.18"},
-            {"Treynor Ratio", "22.101"},
+            {"Information Ratio", "1.663"},
+            {"Tracking Error", "0.183"},
+            {"Treynor Ratio", "22.266"},
             {"Total Fees", "$7.40"},
             {"Fitness Score", "0.021"},
             {"Kelly Criterion Estimate", "0"},
             {"Kelly Criterion Probability Value", "0"},
             {"Sortino Ratio", "79228162514264337593543950335"},
-            {"Return Over Maximum Drawdown", "17.255"},
+            {"Return Over Maximum Drawdown", "18.319"},
             {"Portfolio Turnover", "0.021"},
             {"Total Insights Generated", "0"},
             {"Total Insights Closed", "0"},
@@ -231,7 +226,7 @@ namespace QuantConnect.Algorithm.CSharp
             {"Mean Population Magnitude", "0%"},
             {"Rolling Averaged Population Direction", "0%"},
             {"Rolling Averaged Population Magnitude", "0%"},
-            {"OrderListHash", "1118389718"}
+            {"OrderListHash", "-120798310"}
         };
     }
 }

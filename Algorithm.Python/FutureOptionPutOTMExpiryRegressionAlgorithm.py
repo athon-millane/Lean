@@ -28,10 +28,12 @@ from QuantConnect import Market
 
 ### <summary>
 ### This regression algorithm tests Out of The Money (OTM) future option expiry for puts.
-### We expect 1 order from the algorithm, which are:
+### We expect 2 orders from the algorithm, which are:
 ###
 ###   * Initial entry, buy ES Put Option (expiring OTM)
 ###     - contract expires worthless, not exercised, so never opened a position in the underlying
+###   
+###   * Liquidation of worthless ES Put OTM contract 
 ###
 ### Additionally, we test delistings for future options and assert that our
 ### portfolio holdings reflect the orders the algorithm has submitted.
@@ -43,11 +45,6 @@ class FutureOptionPutOTMExpiryRegressionAlgorithm(QCAlgorithm):
     def Initialize(self):
         self.SetStartDate(2020, 1, 5)
         self.SetEndDate(2020, 6, 30)
-
-        # We add AAPL as a temporary workaround for https://github.com/QuantConnect/Lean/issues/4872
-        # which causes delisting events to never be processed, thus leading to options that might never
-        # be exercised until the next data point arrives.
-        self.AddEquity("AAPL", Resolution.Daily)
 
         self.es19m20 = self.AddFutureContract(
             Symbol.CreateFuture(
